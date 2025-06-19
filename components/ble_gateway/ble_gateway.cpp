@@ -11,7 +11,11 @@ namespace ble_gateway {
 static const char *const TAG = "ble_gateway";
 
 // https://stackoverflow.com/questions/25713995/how-to-decode-a-bluetooth-le-package-frame-beacon-of-a-freetec-px-1737-919-b
+#if ESPHOME_VERSION_CODE >= VERSION_CODE(2025, 6, 0)
+std::string BLEGateway::scan_result_to_hci_packet_hex(const esp32_ble::BLEScanResult &scan_result) {
+#else
 std::string BLEGateway::scan_result_to_hci_packet_hex(const esp_ble_gap_cb_param_t::ble_scan_result_evt_param &scan_result) {
+#endif
   const char *hex = "0123456789ABCDEF";
   char buffer[(HCI_HEADER_LEN + ESP_BLE_ADV_DATA_LEN_MAX + ESP_BLE_SCAN_RSP_DATA_LEN_MAX + 1) * 2 + 1];
   uint8_t payload_size = scan_result.adv_data_len + scan_result.scan_rsp_len;
@@ -26,7 +30,11 @@ std::string BLEGateway::scan_result_to_hci_packet_hex(const esp_ble_gap_cb_param
   // Sub Event: LE Advertising Report (0x02), Num Reports (0x01)
   snprintf(buffer, sizeof(buffer), "043E%02X0201%02X%02X%02X%02X%02X%02X%02X%02X%02X%*s%02X",
     11 + payload_size + 1, // Total Length
+#if ESPHOME_VERSION_CODE >= VERSION_CODE(2025, 6, 0)
+    ESP_BLE_EVT_CONN_ADV, // Event Type (0)
+#else
     scan_result.ble_evt_type, // Event Type
+#endif
     scan_result.ble_addr_type, // Address Type
     scan_result.bda[5], scan_result.bda[4], scan_result.bda[3], scan_result.bda[2], scan_result.bda[1], scan_result.bda[0], 
     payload_size,
