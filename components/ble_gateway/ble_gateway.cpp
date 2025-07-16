@@ -1,4 +1,4 @@
-home#ifdef USE_ESP32
+#ifdef USE_ESP32
 
 #include "ble_gateway.h"
 #include "esphome/core/log.h"
@@ -12,9 +12,9 @@ static const char *const TAG = "ble_gateway";
 
 // https://stackoverflow.com/questions/25713995/how-to-decode-a-bluetooth-le-package-frame-beacon-of-a-freetec-px-1737-919-b
 #if ESPHOME_VERSION_CODE >= VERSION_CODE(2025, 6, 0)
-std::string BLEGateway::scan_result_to_hci_packet_hex(const esp32_ble::BLEScanResult &scan_result) {
+esphome::string BLEGateway::scan_result_to_hci_packet_hex(const esp32_ble::BLEScanResult &scan_result) {
 #else
-std::string BLEGateway::scan_result_to_hci_packet_hex(const esp_ble_gap_cb_param_t::ble_scan_result_evt_param &scan_result) {
+esphome::string BLEGateway::scan_result_to_hci_packet_hex(const esp_ble_gap_cb_param_t::ble_scan_result_evt_param &scan_result) {
 #endif
   const char *hex = "0123456789ABCDEF";
   char buffer[(HCI_HEADER_LEN + ESP_BLE_ADV_DATA_LEN_MAX + ESP_BLE_SCAN_RSP_DATA_LEN_MAX + 1) * 2 + 1];
@@ -50,7 +50,7 @@ std::string BLEGateway::scan_result_to_hci_packet_hex(const esp_ble_gap_cb_param
   return buffer;
 }
 
-std::string address_uint64_to_string(uint64_t address) {
+esphome::string address_uint64_to_string(uint64_t address) {
   char buffer[17 + 1];
   snprintf(buffer, sizeof(buffer), "%02X:%02X:%02X:%02X:%02X:%02X",
     (uint8_t) (address >> 40), (uint8_t) (address >> 32),
@@ -81,7 +81,7 @@ void BLEGateway::add_device(uint64_t device) {
     ESP_LOGW(TAG, "Device with MAC address (%s) already exists", address_uint64_to_string(device).c_str());
 }
 
-void BLEGateway::set_devices(std::string devices) {
+void BLEGateway::set_devices(esphome::string devices) {
   const char *s = devices.c_str();
   int len = strlen(s);
   ESP_LOGD(TAG, "set_devices: (%s)", s);
