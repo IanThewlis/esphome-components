@@ -1,4 +1,4 @@
-#ifdef USE_ESP32
+home#ifdef USE_ESP32
 
 #include "ble_gateway.h"
 #include "esphome/core/log.h"
@@ -56,7 +56,7 @@ std::string address_uint64_to_string(uint64_t address) {
     (uint8_t) (address >> 40), (uint8_t) (address >> 32),
     (uint8_t) (address >> 24), (uint8_t) (address >> 16),
     (uint8_t) (address >> 8), (uint8_t) (address >> 0));
-  return std::string(buffer);
+  return esphome::string(buffer);
 }
 
 void BLEGateway::dump_config() {
